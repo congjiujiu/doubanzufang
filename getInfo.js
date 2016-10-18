@@ -9,9 +9,10 @@ let app = new express();
 let items = [];
 let ps = [];
 let res = [];
-const reg = new RegExp('10|10号线|10地铁站');
 
 app.get('/', (req,res,next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+
   for (let id = 0; id <= 100; id+=25) {
     ps.push(new Promise((resolve, reject) => {
       superagent.get(`https://www.douban.com/group/shanghaizufang/discussion?start=${id}`)
@@ -24,7 +25,10 @@ app.get('/', (req,res,next) => {
 
           let titles = $('.title > a');
           for (let i = 0; i < titles.length-1; i++) {
-            items.push($(titles[i]).attr('title'));
+            items.push({
+              "title": $(titles[i]).attr('title'),
+              "url": $(titles[i]).attr('href')
+            });
           }
           resolve(items);
         });
@@ -35,7 +39,7 @@ app.get('/', (req,res,next) => {
   Promise.all(ps).then(items => {
     let item = items[0];
 
-    res.send(item.filter(v => reg.exec(v)));
+    res.send(item);
   });
 });
 

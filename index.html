@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>豆瓣租房</title>
+	<style>
+		.info {
+			text-align: center;
+			margin: 0 120px;
+		}
+
+		.info .list {
+			
+		}
+
+		.info .list li {
+			display: block;
+			line-height: 40px;
+			list-style: none;
+			text-align: left;
+			padding: 5px 21px;
+		}
+
+		.info .list li a {
+			line-height: 30px;
+			font-size: 16px;
+			color: #999;
+			text-decoration: none;
+		}
+
+		.info .list li:hover {
+			background-color: #ddd;
+		}
+	</style>
+</head>
+<body>
+	<div class="info">
+		<ul class="list"></ul>
+	</div>
+
+	<script src="http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
+	<script>
+		$.ajax({
+			url: 'http://123.206.6.70:3000/',
+			type: 'GET',
+			success: function(res) {
+				// var lists = JSON.parse(res);
+				res.forEach(function(v) {
+					var newList = $('<li>');
+					var itemA = $('<a>');
+					newList.addClass("a-info");
+					itemA.attr('href', v.url);
+					itemA.text(v.title);
+					newList.append(itemA);
+					$('.list').append(newList);
+				});
+			}
+		});
+	</script>
+</body>
+</html>
