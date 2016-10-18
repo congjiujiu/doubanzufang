@@ -56,16 +56,49 @@
 		}
 
 		.detail-info {
+			height: 100%;
 			width: 0;
 			background-color: #fff;
 			padding: 20px;
 			border-left: 1px solid #f0f0f0;
+			border-bottom: 1px solid #f0f0f0;
+			box-shadow: -10px 10px 5px #888;
 			box-sizing: border-box;
 			position: absolute;
+			display: none;
 			top: 0;
 			right: 0;
 			z-index: 9;
 			transition: all 1s 0s ease-in-out;
+			overflow-y: scroll;
+		}
+
+		.detail-info p{
+			font-size: 13px;
+			line-height: 1.62;
+		}
+
+		.detail-info a {
+			text-decoration: none;
+			color: #669;
+		}
+
+		.detail-info .topic-figure {
+			text-align: center;
+		}
+
+		.detail-info .topic-doc h3 {
+			font-size: 14px;
+			padding: 5px 0;
+			line-height: 1.8;
+		}
+
+		.detail-info .topic-doc h3 .from {
+			margin-right: 1em;
+		}
+
+		.detail-info .topic-doc h3 .color-green {
+			color: #072;
 		}
 	</style>
 </head>
@@ -90,13 +123,15 @@
 				success: function(res) {
 					// var lists = JSON.parse(res);
 					res.forEach(function(v) {
-						var newList = $('<li>');
-						var itemA = $('<a>');
-						newList.addClass("a-info");
-						itemA.attr('url', v.url);
-						itemA.text(v.title);
-						newList.append(itemA);
-						$('.list').append(newList);
+						if (/10/.test(v.title)) {
+							var newList = $('<li>');
+							var itemA = $('<a>');
+							newList.addClass("a-info");
+							itemA.attr('url', v.url);
+							itemA.text(v.title);
+							newList.append(itemA);
+							$('.list').append(newList);
+						}
 					});
 
 					reset();
@@ -113,7 +148,15 @@
 					url: id
 				},
 				success: function(res) {
+					var newDom = $('<a>');
+					newDom.addClass('to-origin');
+					newDom.text('查看原帖');
+					newDom.attr('target', '_blank');
+					newDom.attr('href', `https://www.douban.com/group/topic/${id}`);
+
 					$('.detail-info').html(res[0]);
+					$('.detail-info').append(newDom);
+					$('.detail-info').css('top', $(document).scrollTop()+'px');
 					$('.detail-info').css('display', 'block');
 					$('.detail-info').css('width', '600px');
 				}
@@ -131,7 +174,6 @@
 		});
 
 		$('.info').on('click', function(e) {
-			console.log(e.target.nodeName.toUpperCase());
 			if (e.target && e.target.nodeName.toUpperCase() === 'A') {
 				var id = $(e.target).attr('url').split('topic')[1].split('/')[1];
 				getDetail(id);
