@@ -4,9 +4,14 @@
 	<meta charset="UTF-8">
 	<title>豆瓣租房</title>
 	<style>
+		body {
+			padding: 0;
+			margin: 0;
+			width: 100%;
+		}
 		.info {
 			text-align: center;
-			margin: 0 120px;
+			padding: 0 120px;
 		}
 
 		.info .list {
@@ -15,21 +20,52 @@
 
 		.info .list li {
 			display: block;
+			border-top: 1px solid #EBE5CD;
 			line-height: 40px;
 			list-style: none;
 			text-align: left;
-			padding: 5px 21px;
+			padding: 0 21px;
 		}
 
 		.info .list li a {
-			line-height: 30px;
+			display: block;
+			line-height: 40px;
+			padding: 5px 0;
 			font-size: 16px;
-			color: #999;
+			color: #816878;
 			text-decoration: none;
 		}
 
 		.info .list li:hover {
-			background-color: #ddd;
+			background-color: #D1E8CF;
+		}
+
+		.more {
+			margin: 10px 21px;
+			height: 50px;
+			line-height: 50px;
+			font-size: 21px;
+			color: #999;
+			border-top: 1px solid #f0f0f0;
+			border-radius: 3px;
+			text-align: center;
+		}
+
+		.more:hover {
+			background-color: #f0f0f0;
+		}
+
+		.detail-info {
+			width: 0;
+			background-color: #fff;
+			padding: 20px;
+			border-left: 1px solid #f0f0f0;
+			box-sizing: border-box;
+			position: absolute;
+			top: 0;
+			right: 0;
+			z-index: 9;
+			transition: all 1s 0s ease-in-out;
 		}
 	</style>
 </head>
@@ -37,25 +73,75 @@
 	<div class="info">
 		<ul class="list"></ul>
 	</div>
+	<div class="more">more</div>
+	<div class="detail-info"></div>
 
 	<script src="http://upcdn.b0.upaiyun.com/libs/jquery/jquery-2.0.3.min.js"></script>
 	<script>
-		$.ajax({
-			url: 'http://123.206.6.70:3000/',
-			type: 'GET',
-			success: function(res) {
-				// var lists = JSON.parse(res);
-				res.forEach(function(v) {
-					var newList = $('<li>');
-					var itemA = $('<a>');
-					newList.addClass("a-info");
-					itemA.attr('href', v.url);
-					itemA.text(v.title);
-					newList.append(itemA);
-					$('.list').append(newList);
-				});
+		var page = 0;
+		function getData() {
+			$.ajax({
+				url: 'http://123.206.6.70:3000/',
+				type: 'GET',
+				data: {
+					type: "waterlist",
+					from: page
+				},
+				success: function(res) {
+					// var lists = JSON.parse(res);
+					res.forEach(function(v) {
+						var newList = $('<li>');
+						var itemA = $('<a>');
+						newList.addClass("a-info");
+						itemA.attr('url', v.url);
+						itemA.text(v.title);
+						newList.append(itemA);
+						$('.list').append(newList);
+					});
+
+					reset();
+				}
+			});
+		}
+
+		function getDetail(id) {
+			$.ajax({
+				url: 'http://123.206.6.70:3000/',
+				type: 'GET',
+				data: {
+					type: 'detail',
+					url: id
+				},
+				success: function(res) {
+					$('.detail-info').html(res[0]);
+					$('.detail-info').css('display', 'block');
+					$('.detail-info').css('width', '600px');
+				}
+			});
+		}
+
+		function reset() {
+			$('.more').text('more');
+		}
+
+		$('.more').on('click', function() {
+			$(this).text('loading...');
+			page += 75;
+			getData();
+		});
+
+		$('.info').on('click', function(e) {
+			console.log(e.target.nodeName.toUpperCase());
+			if (e.target && e.target.nodeName.toUpperCase() === 'A') {
+				var id = $(e.target).attr('url').split('topic')[1].split('/')[1];
+				getDetail(id);
+			} else if(e.target.nodeName.toUpperCase() === 'DIV') {
+				$('.detail-info').html('');
+				$('.detail-info').css('display', 'none');
+				$('.detail-info').css('width', '0');
 			}
 		});
+		getData();
 	</script>
 </body>
 </html>
